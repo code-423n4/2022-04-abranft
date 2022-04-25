@@ -72,4 +72,22 @@ Under "SPONSORS ADD INFO HERE" heading below, include the following:
 
 This repo will be made public before the start of the contest. (C4 delete this line when made public)
 
+## Scope
+
+contracts/NFTPair.sol
+
+## Getting started
+
+The test cases in test/NFTPair.test.ts furnish examples of how to interact with the contract. Versions have also been deployed to Ropsten, using and entirely mocked environment that allows freely minting ERC-20 tokens, NFTs, and messing with the BentoBox balance, simulating vault gains/losses.
+
+Tests can be run with
+
+    yarn hardhat test
+
+You may have to run
+
+    yarn hardhat typechain
+
+once before doing this.
+
 [ ⭐️ SPONSORS ADD INFO HERE ]
