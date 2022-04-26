@@ -547,19 +547,29 @@ describe("NFT Pair", async () => {
       await expect(pair.connect(alice).removeCollateral(apeIds.aliceOne, alice.address)).to.be.revertedWith("NFTPair: not the lender");
     });
 
-    it("Should allow lenders to seize collateral upon expiry", async () => {
+    it("Should allow lenders to seize collateral at expiry", async () => {
       await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + params.duration]);
       // Send it to someone else for a change:
-      await expect(pair.connect(bob).removeCollateral(apeIds.aliceOne, carol.address))
+      await expect(pair.connect(bob).removeCollateral(apeIds.aliceOne, bob.address))
         .to.emit(pair, "LogRemoveCollateral")
-        .withArgs(apeIds.aliceOne, carol.address)
+        .withArgs(apeIds.aliceOne, bob.address)
         .to.emit(apes, "Transfer")
-        .withArgs(pair.address, carol.address, apeIds.aliceOne);
+        .withArgs(pair.address, bob.address, apeIds.aliceOne);
+    });
+
+    it("Should allow lenders to seize collateral after expiry", async () => {
+      await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + params.duration + 1]);
+      // Send it to someone else for a change:
+      await expect(pair.connect(bob).removeCollateral(apeIds.aliceOne, bob.address))
+        .to.emit(pair, "LogRemoveCollateral")
+        .withArgs(apeIds.aliceOne, bob.address)
+        .to.emit(apes, "Transfer")
+        .withArgs(pair.address, bob.address, apeIds.aliceOne);
     });
 
     it("Should not allow lenders to seize collateral otherwise", async () => {
       await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + params.duration - 1]);
-      await expect(pair.connect(bob).removeCollateral(apeIds.aliceOne, carol.address)).to.be.revertedWith("NFTPair: not expired");
+      await expect(pair.connect(bob).removeCollateral(apeIds.aliceOne, bob.address)).to.be.revertedWith("NFTPair: not expired");
     });
 
     it("Should not allow others to seize collateral ever", async () => {
