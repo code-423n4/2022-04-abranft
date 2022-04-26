@@ -1,66 +1,3 @@
-# ✨ So you want to sponsor a contest
-
-This `README.md` contains a set of checklists for our contest collaboration.
-
-Your contest will use two repos:
-- **a _contest_ repo** (this one), which is used for scoping your contest and for providing information to contestants (wardens)
-- **a _findings_ repo**, where issues are submitted.
-
-Ultimately, when we launch the contest, this contest repo will be made public and will contain the smart contracts to be reviewed and all the information needed for contest participants. The findings repo will be made public after the contest is over and your team has mitigated the identified issues.
-
-Some of the checklists in this doc are for **C4 (🐺)** and some of them are for **you as the contest sponsor (⭐️)**.
-
----
-
-# Contest setup
-
-## 🐺 C4: Set up repos
-- [ ] Create a new private repo named `YYYY-MM-sponsorname` using this repo as a template.
-- [ ] Add sponsor to this private repo with 'maintain' level access.
-- [ ] Send the sponsor contact the url for this repo to follow the instructions below and add contracts here.
-- [ ] Delete this checklist and wait for sponsor to complete their checklist.
-
-## ⭐️ Sponsor: Provide contest details
-
-Under "SPONSORS ADD INFO HERE" heading below, include the following:
-
-- [ ] Name of each contract and:
-  - [ ] source lines of code (excluding blank lines and comments) in each
-  - [ ] external contracts called in each
-  - [ ] libraries used in each
-- [ ] Describe any novel or unique curve logic or mathematical models implemented in the contracts
-- [ ] Does the token conform to the ERC-20 standard? In what specific ways does it differ?
-- [ ] Describe anything else that adds any special logic that makes your approach unique
-- [ ] Identify any areas of specific concern in reviewing the code
-- [ ] Add all of the code to this repo that you want reviewed
-- [ ] Create a PR to this repo with the above changes.
-
----
-
-# Contest prep
-
-## 🐺 C4: Contest prep
-- [ ] Rename this repo to reflect contest date (if applicable)
-- [ ] Rename contest H1 below
-- [ ] Add link to report form in contest details below
-- [ ] Update pot sizes
-- [ ] Fill in start and end times in contest bullets below.
-- [ ] Move any relevant information in "contest scope information" above to the bottom of this readme.
-- [ ] Add matching info to the [code423n4.com public contest data here](https://github.com/code-423n4/code423n4.com/blob/main/_data/contests/contests.csv))
-- [ ] Delete this checklist.
-
-## ⭐️ Sponsor: Contest prep
-- [X] Make sure your code is thoroughly commented using the [NatSpec format](https://docs.soliditylang.org/en/v0.5.10/natspec-format.html#natspec-format).
-- [ ] Modify the bottom of this `README.md` file to describe how your code is supposed to work with links to any relevent documentation and any other criteria/details that the C4 Wardens should keep in mind when reviewing. ([Here's a well-constructed example.](https://github.com/code-423n4/2021-06-gro/blob/main/README.md))
-- [X] Please have final versions of contracts and documentation added/updated in this repo **no less than 8 hours prior to contest start time.**
-- [ ] Ensure that you have access to the _findings_ repo where issues will be submitted.
-- [ ] Promote the contest on Twitter (optional: tag in relevant protocols, etc.)
-- [ ] Share it with your own communities (blog, Discord, Telegram, email newsletters, etc.)
-- [ ] Optional: pre-record a high-level overview of your protocol (not just specific smart contract functions). This saves wardens a lot of time wading through documentation.
-- [ ] Delete this checklist and all text above the line below when you're ready.
-
----
-
 # AbraNFT contest details
 - $47,500 USDC main award pot
 - $2,500 USDC gas optimization award pot
@@ -72,9 +9,27 @@ Under "SPONSORS ADD INFO HERE" heading below, include the following:
 
 This repo will be made public before the start of the contest. (C4 delete this line when made public)
 
-## Scope
+## Glossary
 
-contracts/NFTPair.sol
+| Name                               | Description                                                         |
+| ---------------------------------- | ------------------------------------------------------------------- |
+| Abracadabra                        | Abracadabra the Lending platform                                    |
+| SPELL                              | Governance token Abracadabra                                        |
+| MIM                                | Stablecoin minted by the DeFi protocol                              |
+| Cauldron							 | Smart Contract handling the Lending Logic                           |
+| Private Pool                       | Version of the Cauldron where the collateral is an NFT              |
+| NFTs                               | Non-Fungible Tokens, ERC721s.                                       |
+| CDP / Collateralized Debt Position | A loan backed by some form of collateral                            |
+| LTV / Loan to Value                | Ratio of the debt position to the value of the collateral deposited |
+| Share                              | A share is a Bentobox share.                                        |
+| Collateral                         | The ERC721 (NFT) being used as collateral                           |
+| Asset                              | The ERC20 Token that is borrowed                                    |
+
+
+
+# Contest Scope
+
+The scope of the contest is contracts/NFTPair.sol, a Private Pool that allows two parties to create a private loan with a NFT as collateral.
 
 ## Getting started
 
@@ -90,4 +45,61 @@ You may have to run
 
 once before doing this.
 
-[ ⭐️ SPONSORS ADD INFO HERE ]
+## Protocol overview
+
+Abracadabra.money is a lending platform that uses interest-bearing tokens (ibTKNs) or NFTs as collateral to borrow a USD pegged stablecoin (Magic Internet Money - MIM), that can be used as any other traditional stablecoin.
+The protocol is governed by the SPELL token, that manages the parameters of the protocol, the use of the Treasury, the tokenomics.
+
+
+## Smart Contracts
+
+Abracadabra is built upon the Bentobox, and uses a custom version of the KASHI technology.
+- Bentobox is a smart contract that stores funds, handles their transfers, supports flash loans, applications and strategies
+- KASHI is a isolated lending market built on top of Bentobox technology. it features one smart contract per 'pair', a combination of the collateral and the borrowed asset.
+- Cauldrons are a version of KASHI that uses a CDP to mint a stablecoin, MIM, instead of relying on LPs.
+- NFT Pair are a version of Cauldrons where the collateral isn't an ERC20 token but an ERC721 token, the deal OTC, the parameters of the loan themselves pre-defined.
+
+Bentobox, KASHI and Cauldrons as listed for context only, as the scope is the NFT Pair.
+
+One NFTPair is deployed as a MasterContract, to be cloned into actual lending markets via the deploy() function of bentobox.
+
+### NFTPair.sol (653 sloc)
+
+This contract allows a lender and a borrower to do an OTC loan with an ERC721 as collateral and an ERC20 as borrowed asset. The parameters (valuation, duration and interests) are set by the users. 
+
+This contract uses the following libraries and interfaces:
+- "@boringcrypto/boring-solidity/contracts/libraries/BoringMath.sol";
+- "@boringcrypto/boring-solidity/contracts/BoringOwnable.sol";
+- "@boringcrypto/boring-solidity/contracts/Domain.sol";
+- "@boringcrypto/boring-solidity/contracts/interfaces/IMasterContract.sol";
+- "@boringcrypto/boring-solidity/contracts/libraries/BoringRebase.sol";
+- "@boringcrypto/boring-solidity/contracts/libraries/BoringERC20.sol";
+- "@sushiswap/bentobox-sdk/contracts/IBentoBoxV1.sol";
+
+
+The contract has multiple functions _(eg: requestLoan, removeCollateral, lend)_ that each have an action ID and that can be called either directly or via the cook() function, passing actions ID, value and data as arrays. This function allows for the execution of several actions within the same transaction, which is core to how abracadabra works.
+
+## Testnet deployment
+
+The NFTPair contract and all it's dependencies are deployed on the Ropsten Ethereum testnet:
+
+- BentoBox: https://ropsten.etherscan.io/address/0x9a5620779fef1928ef87c1111491212efc2c3cb8
+
+- master contract NFT Pair: https://ropsten.etherscan.io/address/0x3a341f5474aac54829a587ce6ab13c86af6b1e29#code
+The MasterContract is already whitelisted in the mock BentoBox.
+
+- Two mock ERC721 tokens, public mint() (but with sequential IDs)
+    - "Apes":
+    https://ropsten.etherscan.io/address/0xcCB893B3b5D7B003FEA0134215E4BCc6F8fb6aC7
+    - "Bears"
+    https://ropsten.etherscan.io/address/0x95d7c415baaff9446b457439f2ff269032a73ff6
+
+- Mock ERC20 with public mint() ("free money")
+    https://ropsten.etherscan.io/address/0xed79a29ce9f7e285be23e8fc32f74e5289713b86
+
+- NFT Pair deployments using either contract, and the "free money":
+    - "Apes"
+      https://ropsten.etherscan.io/address/0x9AEEf9f52eCCef2dc970090c304635fb29161805
+    - "Bears"
+      https://ropsten.etherscan.io/address/0xb215b44c3439cA72170F379f12A78437eACE9a19
+
