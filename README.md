@@ -7,8 +7,6 @@
 - Starts April 27, 2022 00:00 UTC
 - Ends May 01, 2022 23:59 UTC
 
-This repo will be made public before the start of the contest. (C4 delete this line when made public)
-
 ## Glossary
 
 | Name                               | Description                                                         |
