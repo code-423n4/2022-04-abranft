@@ -27,7 +27,7 @@
 
 # Contest Scope
 
-The scope of the contest is contracts/NFTPair.sol, a Private Pool that allows two parties to create a private loan with a NFT as collateral.
+The scope of the contest is contracts/NFTPair.sol, a Private Pool that allows two parties to create a private loan with a NFT as collateral, and contracts/NFTPairWithOracle.sol, which is largely similar, but allows the option of early liquidation if the price drops below a floor set by an oracle.
 
 ## Getting started
 
@@ -63,7 +63,7 @@ One NFTPair is deployed as a MasterContract, to be cloned into actual lending ma
 
 ### NFTPair.sol (653 sloc)
 
-This contract allows a lender and a borrower to do an OTC loan with an ERC721 as collateral and an ERC20 as borrowed asset. The parameters (valuation, duration and interests) are set by the users. 
+This contract allows a lender and a borrower to do an OTC loan with an ERC721 as collateral and an ERC20 as borrowed asset. The parameters (valuation, duration and interests) are set by the users.
 
 This contract uses the following libraries and interfaces:
 - "@boringcrypto/boring-solidity/contracts/libraries/BoringMath.sol";
