@@ -1,0 +1,155 @@
+==============================================================
+Guild: Code4rena
+Channel: ARCHIVE-Q2-2022 / ☑abranft-apr27
+==============================================================
+
+[04/26/2022 1:58 PM] itsmetechjay
+👋 Hello and welcome to the contest channel for the $50K MIM **AbraNFT **contest!
+
+📆 Contest opens April 27, 2022 at 0:00 UTC and runs through May 1, 2022 at 23:59 UTC (5 days).
+
+Please give a warm welcome to the Abracadabra team, particularly @0xMerlin and @cryptolyndon who will be available for questions either here in the channel or via DM.
+
+We'll be posting relevant links, documentation, etc. here, so if you intend to participate in this contest, consider enabling notifications for this channel. 🐺 ⏰
+
+Contest Page: https://code4rena.com/contests/2022-04-abranft-contest
+
+{Embed}
+https://code4rena.com/contests/2022-04-abranft-contest
+Code4rena AbraNFT contest
+$50,000 USDC
+27 April 2022—1 May 2022
+Code4rena - ARCHIVE-Q2-2022 - ☑abranft-apr27 [968510418333085756].txt_Files/C4-banner-7C19B.png
+
+{Reactions}
+🧙‍♂️ (8) 
+
+[04/27/2022 5:03 AM] pedroais
+Could you share more about how the bentoBox works with the NFT pair contract ?
+
+
+[04/27/2022 5:04 AM] pedroais
+What are these shares representing and why are you using them for loan amounts ?
+
+{Attachments}
+Code4rena - ARCHIVE-Q2-2022 - ☑abranft-apr27 [968510418333085756].txt_Files/unknown-CC45A.png
+
+
+[04/27/2022 5:58 AM] barry_lyndon
+The BentoBox allows for funds to be invested in strategies - like Yearn vaults, for instance. If you deposit funds (ERC-20 tokens) into the BentoBox, you get a number of "shares", in proportion to your deposit, and the actual tokens may get invested. If the strategy profits, your shares become correspondingly more valuable.
+
+Not every ERC-20 has a strategy; if there is none, the amount:share ratio will simply be 1:1.
+
+This "shares" business is just how the BentoBox tracks balances, and protocols using it have to be aware. To some extent, the BentoBox handles these conversions and you can deal in absolute amounts. For instance, deposits and withdrawals can be specified in either shares or amounts. 
+
+Knowing that these calculations occur, and that shares is the "true" quantity and the other involves rounding, it makes sense to do calculations such as "take X% as fee" in Bento shares, given the choice.
+
+
+[04/27/2022 6:03 AM] barry_lyndon
+Loan amounts, however, are actual "amounts", not shares -- how much you owe does/should not depend on how some strategy the lender may choose to invest in, performs. 
+
+If you take out a loan, you get Bento shares corresponding to the amount you want to borrow (minus a fee). When you repay, you owe however many Bento shares the amount due (principal  + interest) corresponds to.
+
+
+[04/27/2022 6:07 AM] barry_lyndon
+(If you as a borrower want tokens rather than shares, you can choose to convert them -- withdraw from Bento -- immediately, or use `cook()` to do it in one transaction. An UI could of course facilitate this)
+
+
+[04/27/2022 2:31 PM] pedroais
+Thank you that's very helpful
+
+
+[04/28/2022 10:10 AM] 100proof
+I'd be really interested in hearing more about how Abracadabra uses _actions_. In particular, I'd love to know more about how `value1` and `value2` (returned from earlier actions) can be used in later actions. Could you let us know about some typical use cases? Better yet, are there any links to documentation of the action feature?
+
+
+[04/28/2022 10:14 AM] 100proof
+Also, what is "skimming" all about?
+
+
+[04/28/2022 3:47 PM] barry_lyndon
+OK, I've had a few questions about `skim` now.
+
+- What does skim do?
+
+If you set skim to true, you are telling the contract that you have already transfered the ERC-20 tokens, or the NFT, and there is no need to take it from your account.
+
+The contract owns a certain amount of funds and NFTs: every NFT that is being used as collateral in a loan, or loan request, and fees that have been collected as ERC-20 token. It knows which NFTs, and it knows how much it collected in fees (minus withdrawals by the protocol owners). 
+
+Anything in excess of that must have somehow been transfered in. To "skim" is to treat that excess as your deposit. Whether it was actually you that did this or someone else, is not the contract's problem. The excess is fair game for anyone to take. The envisioned use case is to do it in a transaction: you have tokens somewhere, and rather than withdrawing them to your wallet (or BentoBox account), and then depositing them here, you just get them sent directly to the contract. This can either be done via the cook() method on NFTPair, or of course by some other contract that you control.
+
+
+[04/28/2022 4:20 PM] barry_lyndon
+Actions allow for some measure of programmability by just calling the contract. In particular, it allows for more elaborate interactions from a UI.
+
+To be honest, they have not been a priority so far, other than as potential attack vectors, and will likely see some additions in the future.
+
+The most common use case is not very exciting, but useful nonetheless: to seemlessly handle BentoBox deposits and withdrawals. Another would be to do batches of loans and/or loan requests.
+
+Neither of these uses return values. A big one that would, had we implemented it, would be to deposit the exact amount required for a repayment into the BentoBox, and then repay the loan. Here, ACTION_BENTO_DEPOSIT would use the result of an interest rate calculation, which did not make it into the contract yet (as a cook action).
+
+And even that one a) does not allow more advanced "branching" features effected by using the negative range of inputs, and b) has its usefulness capped by the amount of "dust" that you lose if you just calculate the interest beforehand and slightly overshoot it to allow for the transaction to process.
+
+
+[04/28/2022 4:20 PM] barry_lyndon
+So tl;dr: it's there, it allows for some programmability from the UI, but we have not got any super exciting use cases for it. It may well turn out that anything sufficiently exciting, warrants its own external contract.
+
+
+[04/29/2022 7:49 AM] jessus9409
+Hi guys
+
+
+[04/30/2022 3:10 PM] acegawd
+@cryptolyndon DM
+
+
+[05/02/2022 12:02 AM] C4
+**🚨 CONTEST ALERT**
+
+@🐺wardens The **AbraNFT **contest is now closed! Huge thanks to everyone who participated 🔍, whether you submitted a finding or not.
+
+What's next: the Abracadabra team will review the findings over the next couple of days, and then we'll pass them off to the judge. Keep an eye on #📢announcements for regular updates on how the contest is progressing through awarding 🤑🏆, judging 🧑‍⚖️ and reporting 📜. Feel free to ping a contest administrator if you have questions along the way!
+
+
+[05/28/2022 3:59 PM] scaraven
+Hi, what is the status on this contest right now?
+
+
+[05/29/2022 2:36 PM] dravee
+The C4 staff will only be back on Tuesday to answer that. But I understand, I'm eagerly waiting too, it's been in the judging phase for a while now 🥲
+
+
+[05/29/2022 2:37 PM] scaraven
+Its been my first major submission so I'm looking forward to it
+
+{Reactions}
+💪 
+
+[05/31/2022 5:00 PM] liveactionllamac4
+I think awards will likely be announced sometime this week. 🤞
+
+{Reactions}
+🎉 (3) 
+
+[06/07/2022 1:44 PM] fatherofblocks
+Hi, I wanted to ask a question, for which network are the MIMs going to be paid?
+
+
+[06/07/2022 9:42 PM] liveactionllamac4
+On mainnet! Actually, fyi this msg in #🐺wardens is related, as we'll be reaching out regarding this 🙂
+https://discordapp.com/channels/810916927919620096/810936719003090974/983846333096009819
+
+
+[06/29/2022 6:21 AM] catchup#2659
+Hi, any news on the audit report?
+
+
+[06/29/2022 7:10 PM] itsmetechjay
+The draft report is with the sponsor for review.
+
+{Reactions}
+👍🏻 
+
+==============================================================
+Exported 23 message(s)
+==============================================================
